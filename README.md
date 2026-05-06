@@ -1,68 +1,40 @@
 # vector-ui-timeline-bench
 
-`vector-ui-timeline-bench` treats frontend apps as a local verification problem. The Lua implementation is intentionally narrow, but the fixtures and notes make the behavior explicit.
+`vector-ui-timeline-bench` is a compact Lua repository for frontend apps, centered on this goal: Develop a Lua command-oriented project for timeline scenarios with capacity fixtures, allocation and spill reports, and explicit failure cases.
 
-## Vector UI Timeline Bench Checkpoints
+## Project Rationale
 
-Treat the compact fixture as the contract and the extended examples as a scratchpad. The code should stay boring enough that a change in behavior is obvious from the test output.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
 
-## What This Is For
+## Vector UI Timeline Bench Review Notes
 
-This is not a wrapper around a service. It is a self-contained project that shows how the model behaves when demand, capacity, latency, risk, and weight move in different directions.
+Start with `state pressure` and `view drift`. Those cases create the widest score spread in this repo, so they are the best quick check when the model changes.
 
-## Case Study
+## Feature Set
 
-The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
+- `fixtures/domain_review.csv` adds cases for view drift and state pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/vector-ui-timeline-walkthrough.md` walks through the case spread.
+- The Lua code includes a review path for `state pressure` and `view drift`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Architecture Notes
+## Architecture
 
-The interesting part is the boundary between accepted and reviewed scenarios. Extended examples sit near that boundary so future edits can show whether the model became more permissive or more cautious. The Lua project keeps the module shape simple and validates behavior through a direct script.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Useful Pieces
+The added Lua path is deliberately direct, with fixtures doing most of the explaining.
 
-- Models view models with deterministic scoring and explicit review decisions.
-- Uses fixture data to keep interaction state changes visible in code review.
-- Includes extended examples for layout checks, including `surge` and `degraded`.
-- Documents fixture data tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-
-## Local Workflow
+## Usage
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Test Command
 
-## Quality Gate
+The same command runs the local verification path. The highest-scoring domain case is `stress` at 241, which lands in `ship`. The most cautious case is `stale` at 142, which lands in `ship`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Next Improvements
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Project Layout
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Expansion Ideas
-
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add one more frontend apps fixture that focuses on a malformed or borderline input.
-
-## Scope
-
-This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
-
-## Tooling
-
-The only required setup is the local Lua toolchain. After cloning, stay in the repo root so fixture paths resolve correctly.
+This remains a local project with deterministic fixtures. It does not depend on credentials, hosted services, or live data. Future work should add richer malformed inputs before widening the public API.
