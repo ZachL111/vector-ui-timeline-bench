@@ -1,0 +1,17 @@
+{
+  "repo": "vector-ui-timeline-bench",
+  "thresholds": {
+    "signal": 3,
+    "slack": 1,
+    "confidence": 1,
+    "drag": 3,
+    "ship": 209,
+    "watch": 97
+  },
+  "terms": [
+    "view drift",
+    "state pressure",
+    "layout risk",
+    "interaction cost"
+  ]
+}
